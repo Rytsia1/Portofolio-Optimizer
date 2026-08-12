@@ -2,6 +2,7 @@ import datetime as dt
 from src.data_fetcher import get_stock_data
 from src.metrics_calc import calculate_annual_returns, calculate_covariance_matrix
 from src.optimizer import optimize_portfolio
+from src.visualization import plot_efficient_frontier
 
 def main():
     # 1. Define sample tickers and date range (5 years ago to today)
@@ -44,6 +45,13 @@ def main():
     print(f"  Max Sharpe Ratio       : {results['max_sharpe_ratio']:.4f}")
     
     print("=" * 45)
+
+    print("\nGenerating Efficient Frontier visualization (close the plot window to exit)...")
+    plot_efficient_frontier(
+        mean_returns, 
+        cov_matrix, 
+        results['optimal_weights']
+    )
 
 if __name__ == "__main__":
     main()
