@@ -9,7 +9,7 @@ def plot_efficient_frontier(
     optimal_weights: pd.Series, 
     risk_free_rate: float = 0.02, 
     num_portfolios: int = 10000
-) -> None:
+) -> plt.Figure:
     """
     Plots the Efficient Frontier using Monte Carlo simulation.
     
@@ -44,7 +44,7 @@ def plot_efficient_frontier(
     )
     
     # Create the plot
-    plt.figure(figsize=(10, 7))
+    fig = plt.figure(figsize=(10, 7))
     
     # Plot the random portfolios scatter
     scatter = plt.scatter(
@@ -80,4 +80,4 @@ def plot_efficient_frontier(
     plt.legend(labelspacing=0.8)
     
     plt.tight_layout()
-    plt.show()
+    return fig
