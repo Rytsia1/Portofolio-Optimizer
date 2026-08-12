@@ -3,6 +3,7 @@ from src.data_fetcher import get_stock_data
 from src.metrics_calc import calculate_annual_returns, calculate_covariance_matrix
 from src.optimizer import optimize_portfolio
 from src.visualization import plot_efficient_frontier
+from src.risk_metrics import calculate_parametric_var, calculate_parametric_cvar
 
 def main():
     # 1. Define sample tickers and date range (5 years ago to today)
@@ -43,6 +44,14 @@ def main():
     print(f"  Expected Annual Return : {results['expected_return'] * 100:.2f}%")
     print(f"  Annual Volatility      : {results['volatility'] * 100:.2f}%")
     print(f"  Max Sharpe Ratio       : {results['max_sharpe_ratio']:.4f}")
+    
+    # Calculate advanced risk metrics (95% confidence)
+    var_95 = calculate_parametric_var(results['expected_return'], results['volatility'])
+    cvar_95 = calculate_parametric_cvar(results['expected_return'], results['volatility'])
+    
+    print("\n[ Advanced Risk Metrics ]")
+    print(f"  95% Value at Risk (VaR)        : {var_95 * 100:.2f}%")
+    print(f"  95% Conditional VaR (CVaR)     : {cvar_95 * 100:.2f}%")
     
     print("=" * 45)
 
