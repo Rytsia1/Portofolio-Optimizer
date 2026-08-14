@@ -48,8 +48,8 @@ default_start = today - dt.timedelta(days=5 * 365)
 
 st.sidebar.markdown("**Date Range**")
 col_s, col_e = st.sidebar.columns(2)
-start_date = col_s.date_input("Start", value=default_start)
-end_date = col_e.date_input("End", value=today)
+start_date = col_s.date_input("Start", value=default_start, min_value=dt.date(2000, 1, 1))
+end_date = col_e.date_input("End", value=today, min_value=dt.date(2000, 1, 1))
 
 st.sidebar.markdown("**Parameters**")
 risk_free_rate = st.sidebar.number_input("Risk-Free Rate", value=0.02, step=0.005, format="%.3f")
