@@ -50,7 +50,7 @@ pip install -r requirements.txt
 ### Streamlit Web App (Recommended)
 
 ```bash
-streamlit run app.py
+streamlit run streamlit_app.py
 ```
 
 Open your browser and navigate to **http://localhost:8501**.
@@ -79,7 +79,7 @@ Outputs the optimal weights, expected return, volatility, Sharpe Ratio, VaR, and
 ```
 portfolio-optimizer/
 │
-├── app.py                  # Streamlit web application (main UI)
+├── streamlit_app.py        # Streamlit web application (main UI)
 ├── main.py                 # CLI execution script
 ├── requirements.txt        # Python dependencies
 ├── .gitignore
