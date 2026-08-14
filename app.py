@@ -12,6 +12,8 @@ from src.backtester import run_backtest
 # ── PAGE CONFIG ────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Portfolio Optimizer", layout="wide", page_icon="📈")
 
+
+
 # ── AVAILABLE TICKERS ──────────────────────────────────────────────────────────
 AVAILABLE_TICKERS = [
     'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'TSLA', 'NVDA', 'JPM',
@@ -34,6 +36,25 @@ st.markdown(
 
 # ── SIDEBAR ────────────────────────────────────────────────────────────────────
 st.sidebar.markdown("## ⚙️ Configuration")
+
+selected_theme = st.sidebar.radio(
+    "Dashboard Theme", ["Dark", "Light"], horizontal=True
+)
+st.sidebar.markdown("---")
+
+# ── THEME CSS ───────────────────────────────────────────────────────────────
+if selected_theme == "Dark":
+    st.markdown("""
+        <style>
+        .stApp { background-color: #121212 !important; color: #ffffff !important; }
+        section[data-testid="stSidebar"] { background-color: #1a1a1a !important; }
+        </style>""", unsafe_allow_html=True)
+else:
+    st.markdown("""
+        <style>
+        .stApp { background-color: #f8f9fa !important; color: #111111 !important; }
+        section[data-testid="stSidebar"] { background-color: #e9ecef !important; }
+        </style>""", unsafe_allow_html=True)
 
 tickers = st.sidebar.multiselect(
     "Select Stocks to Simulate",
@@ -125,7 +146,7 @@ if run_btn:
             with left:
                 st.markdown("#### Optimal Asset Allocation")
                 weights_df = (results['optimal_weights'] * 100).rename("Weight (%)")
-                st.bar_chart(weights_df, color="#a3ff00")
+                st.bar_chart(weights_df, color="#3b82f6")
 
                 st.markdown("#### Weights Table")
                 display_df = weights_df.to_frame()
@@ -136,9 +157,10 @@ if run_btn:
                 st.markdown("#### Efficient Frontier")
                 fig = plot_efficient_frontier(
                     mean_returns, cov_matrix, results['optimal_weights'],
-                    risk_free_rate=risk_free_rate
+                    risk_free_rate=risk_free_rate,
+                    theme=selected_theme
                 )
-                st.pyplot(fig, transparent=False)
+                st.pyplot(fig, transparent=True)
 
         # ─ TAB 2 ──────────────────────────────────────────────────────────────
         with tab2:
