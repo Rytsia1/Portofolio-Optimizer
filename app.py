@@ -47,7 +47,7 @@ confidence_level = st.sidebar.number_input(
 benchmark_ticker = st.sidebar.text_input("Benchmark Ticker", value="SPY")
 max_weight = st.sidebar.slider(
     "Max Weight per Asset",
-    min_value=0.10, max_value=1.0, value=1.0, step=0.05, format="%.0%%"
+    min_value=0.10, max_value=1.0, value=1.0, step=0.05, format="%.0f%%"
 )
 
 st.sidebar.markdown("---")
