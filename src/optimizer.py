@@ -49,7 +49,8 @@ def negative_sharpe_ratio(
 def optimize_portfolio(
     mean_returns: pd.Series, 
     cov_matrix: pd.DataFrame, 
-    risk_free_rate: float = 0.02
+    risk_free_rate: float = 0.02,
+    max_weight: float = 1.0
 ) -> Dict[str, Any]:
     """
     Finds the optimal portfolio weights that maximize the Sharpe ratio.
@@ -58,6 +59,8 @@ def optimize_portfolio(
         mean_returns (pd.Series): Annualized mean returns for each asset.
         cov_matrix (pd.DataFrame): Annualized covariance matrix.
         risk_free_rate (float): The risk-free rate of return. Defaults to 0.02.
+        max_weight (float): Maximum allowable weight for any single asset (0.0–1.0).
+                            Defaults to 1.0 (no cap / unconstrained).
 
     Returns:
         Dict[str, Any]: A dictionary containing the optimal weights, expected return, 
@@ -69,8 +72,8 @@ def optimize_portfolio(
     # Constraint: sum of all weights must equal 1.0
     constraints = ({'type': 'eq', 'fun': lambda x: np.sum(x) - 1.0})
     
-    # Bounds: each weight must be between 0.0 and 1.0 (no short selling)
-    bounds = tuple((0.0, 1.0) for _ in range(num_assets))
+    # Bounds: each weight must be between 0.0 and max_weight (no short selling)
+    bounds = tuple((0.0, max_weight) for _ in range(num_assets))
     
     # Initial guess: equal distribution of weights
     initial_guess = np.array([1.0 / num_assets] * num_assets)

@@ -34,6 +34,11 @@ confidence_level = st.sidebar.number_input(
     "VaR/CVaR Confidence Level", value=0.95, step=0.01, max_value=0.99, min_value=0.50
 )
 benchmark_ticker = st.sidebar.text_input("Benchmark Ticker", value="SPY")
+max_weight = st.sidebar.slider(
+    "Maximum Weight per Asset (Constraint)",
+    min_value=0.10, max_value=1.0, value=1.0, step=0.05,
+    format="%.2f"
+)
 
 # --- MAIN EXECUTION ---
 if st.sidebar.button("Run Optimization", type="primary"):
@@ -41,6 +46,13 @@ if st.sidebar.button("Run Optimization", type="primary"):
 
     if len(tickers) < 2:
         st.error("Please enter at least two stock tickers to optimize a portfolio.")
+    elif max_weight * len(tickers) < 1.0:
+        st.error(
+            f"Invalid constraint: a maximum weight of **{max_weight:.0%}** across "
+            f"**{len(tickers)} assets** can only cover **{max_weight * len(tickers):.0%}** "
+            "of the portfolio — less than 100%. Please increase the maximum weight or add more tickers."
+        )
+        st.stop()
     else:
         with st.spinner("Fetching market data and running optimizations..."):
             try:
@@ -54,7 +66,7 @@ if st.sidebar.button("Run Optimization", type="primary"):
                 cov_matrix = calculate_covariance_matrix(df_prices)
 
                 # 3. Optimize Portfolio
-                results = optimize_portfolio(mean_returns, cov_matrix, risk_free_rate=risk_free_rate)
+                results = optimize_portfolio(mean_returns, cov_matrix, risk_free_rate=risk_free_rate, max_weight=max_weight)
 
                 # 4. Advanced Risk Metrics
                 var_95 = calculate_parametric_var(
