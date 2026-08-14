@@ -27,7 +27,7 @@ def plot_efficient_frontier(
     Returns:
         plt.Figure: Matplotlib figure object for rendering in Streamlit.
     """
-    plt.style.use('dark_background')
+    plt.style.use('default')
 
     num_assets = len(mean_returns)
     results = np.zeros((3, num_portfolios))
@@ -48,9 +48,9 @@ def plot_efficient_frontier(
 
     fig, ax = plt.subplots(figsize=(10, 6))
 
-    # Transparent background to blend with Streamlit dark theme
-    fig.patch.set_facecolor('none')
-    ax.set_facecolor('none')
+    # White background
+    fig.patch.set_facecolor('white')
+    ax.set_facecolor('white')
 
     scatter = ax.scatter(
         results[0, :],
@@ -64,9 +64,9 @@ def plot_efficient_frontier(
     )
 
     colorbar = fig.colorbar(scatter, ax=ax)
-    colorbar.set_label('Sharpe Ratio', color='white')
-    colorbar.ax.yaxis.set_tick_params(color='white')
-    plt.setp(colorbar.ax.yaxis.get_ticklabels(), color='white')
+    colorbar.set_label('Sharpe Ratio', color='black')
+    colorbar.ax.yaxis.set_tick_params(color='black')
+    plt.setp(colorbar.ax.yaxis.get_ticklabels(), color='black')
 
     # Optimal portfolio — neon green star
     ax.scatter(
@@ -79,14 +79,14 @@ def plot_efficient_frontier(
         label=f'Optimal Portfolio  |  Sharpe: {opt_sharpe:.2f}'
     )
 
-    ax.set_title('Efficient Frontier — Monte Carlo Simulation', color='white', pad=14, fontsize=13)
-    ax.set_xlabel('Annualized Volatility (Risk)', color='white')
-    ax.set_ylabel('Annualized Expected Return', color='white')
-    ax.tick_params(colors='white')
+    ax.set_title('Efficient Frontier — Monte Carlo Simulation', color='black', pad=14, fontsize=13)
+    ax.set_xlabel('Annualized Volatility (Risk)', color='black')
+    ax.set_ylabel('Annualized Expected Return', color='black')
+    ax.tick_params(colors='black')
     for spine in ax.spines.values():
-        spine.set_edgecolor('#333333')
-    ax.grid(True, linestyle='--', alpha=0.2, color='white')
-    ax.legend(labelspacing=0.8, facecolor='#141414', edgecolor='#333333', labelcolor='white')
+        spine.set_edgecolor('#cccccc')
+    ax.grid(True, linestyle='--', alpha=0.4, color='grey')
+    ax.legend(labelspacing=0.8, facecolor='white', edgecolor='#cccccc', labelcolor='black')
 
     plt.tight_layout()
     return fig

@@ -127,7 +127,7 @@ if run_btn:
                     mean_returns, cov_matrix, results['optimal_weights'],
                     risk_free_rate=risk_free_rate
                 )
-                st.pyplot(fig, transparent=True)
+                st.pyplot(fig, transparent=False)
 
         # ─ TAB 2 ──────────────────────────────────────────────────────────────
         with tab2:
