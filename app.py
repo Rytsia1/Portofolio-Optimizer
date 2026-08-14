@@ -22,30 +22,17 @@ AVAILABLE_TICKERS = [
     'ADBE', 'CSCO', 'CRM', 'AMD',
 ]
 
-# ── HEADER + CHART THEME TOGGLE ───────────────────────────────────────────────
-header_col, theme_col = st.columns([8, 2])
-
-with header_col:
-    st.markdown(
-        """
-        <h1 style='margin-bottom:0'>📈 Portfolio Optimizer</h1>
-        <p style='color:#888888; margin-top:4px; font-size:15px'>
-            Modern Portfolio Theory · Max Sharpe Ratio · Efficient Frontier · Risk Metrics · Backtesting
-        </p>
-        """,
-        unsafe_allow_html=True,
-    )
-
-with theme_col:
-    st.markdown("<div style='padding-top:20px'></div>", unsafe_allow_html=True)
-    with st.popover("🎨 Chart Theme", use_container_width=True):
-        selected_theme = st.radio(
-            "Mode", ["Dark", "Light"],
-            horizontal=True,
-            label_visibility="collapsed"
-        )
-
-st.markdown("<hr style='border-color:#333333; margin:4px 0 20px'>", unsafe_allow_html=True)
+# ── HEADER ─────────────────────────────────────────────────────────────────────
+st.markdown(
+    """
+    <h1 style='margin-bottom:0'>📈 Portfolio Optimizer</h1>
+    <p style='color:#888888; margin-top:4px; font-size:15px'>
+        Modern Portfolio Theory · Max Sharpe Ratio · Efficient Frontier · Risk Metrics · Backtesting
+    </p>
+    <hr style='border-color:#222222; margin-bottom:24px'>
+    """,
+    unsafe_allow_html=True,
+)
 
 # ── SIDEBAR ────────────────────────────────────────────────────────────────────
 st.sidebar.markdown("## ⚙️ Configuration")
@@ -151,10 +138,9 @@ if run_btn:
                 st.markdown("#### Efficient Frontier")
                 fig = plot_efficient_frontier(
                     mean_returns, cov_matrix, results['optimal_weights'],
-                    risk_free_rate=risk_free_rate,
-                    theme=selected_theme
+                    risk_free_rate=risk_free_rate
                 )
-                st.pyplot(fig, transparent=True)
+                st.plotly_chart(fig, use_container_width=True)
 
         # ─ TAB 2 ──────────────────────────────────────────────────────────────
         with tab2:

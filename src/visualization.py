@@ -1,21 +1,19 @@
 import numpy as np
 import pandas as pd
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 from src.optimizer import portfolio_performance
-
 
 def plot_efficient_frontier(
     mean_returns: pd.Series,
     cov_matrix: pd.DataFrame,
     optimal_weights: pd.Series,
     risk_free_rate: float = 0.02,
-    num_portfolios: int = 10000,
-    theme: str = "Dark"
-) -> plt.Figure:
+    num_portfolios: int = 10000
+) -> go.Figure:
     """
-    Plots the Efficient Frontier using Monte Carlo simulation.
+    Plots the Efficient Frontier using Monte Carlo simulation via Plotly.
+    The chart background is left transparent/unset so it seamlessly 
+    inherits the native Streamlit Light/Dark theme.
 
     Args:
         mean_returns (pd.Series): Annualized mean returns for each asset.
@@ -23,14 +21,14 @@ def plot_efficient_frontier(
         optimal_weights (pd.Series): Optimal portfolio weights.
         risk_free_rate (float): Risk-free rate. Defaults to 0.02.
         num_portfolios (int): Number of random portfolios. Defaults to 10000.
-        theme (str): "Dark" or "Light" — controls matplotlib style and marker colors.
 
     Returns:
-        plt.Figure: Matplotlib figure ready for st.pyplot().
+        go.Figure: Plotly figure object.
     """
     num_assets = len(mean_returns)
     results = np.zeros((3, num_portfolios))
 
+    # Run Monte Carlo
     for i in range(num_portfolios):
         weights = np.random.random(num_assets)
         weights /= np.sum(weights)
@@ -43,60 +41,61 @@ def plot_efficient_frontier(
         optimal_weights.values, mean_returns, cov_matrix, risk_free_rate
     )
 
-    # Theme-specific settings
-    if theme == "Dark":
-        style        = 'dark_background'
-        cmap         = 'plasma'
-        marker_color = '#a3ff00'
-        text_color   = 'white'
-        grid_color   = 'white'
-        grid_alpha   = 0.15
-        legend_face  = '#1a1a1a'
-        spine_color  = '#333333'
-    else:
-        style        = 'default'
-        cmap         = 'viridis'
-        marker_color = '#dc2626'
-        text_color   = 'black'
-        grid_color   = 'grey'
-        grid_alpha   = 0.35
-        legend_face  = 'white'
-        spine_color  = '#cccccc'
+    fig = go.Figure()
 
-    with plt.style.context(style):
-        fig, ax = plt.subplots(figsize=(10, 6))
-        fig.patch.set_facecolor('none')
-        ax.set_facecolor('none')
+    # Trace 1: Random Portfolios (Scatter)
+    fig.add_trace(go.Scatter(
+        x=results[0, :],
+        y=results[1, :],
+        mode='markers',
+        marker=dict(
+            color=results[2, :],
+            colorscale='Blues',
+            showscale=True,
+            size=5,
+            opacity=0.6,
+            colorbar=dict(title="Sharpe Ratio")
+        ),
+        name='Random Portfolios',
+        hoverinfo='x+y+text',
+        text=[f"Sharpe: {s:.2f}" for s in results[2, :]]
+    ))
 
-        scatter = ax.scatter(
-            results[0, :], results[1, :],
-            c=results[2, :], cmap=cmap,
-            marker='o', s=8, alpha=0.5,
-            label='Random Portfolios'
+    # Trace 2: Optimal Portfolio (Electric Blue Star)
+    fig.add_trace(go.Scatter(
+        x=[opt_volatility],
+        y=[opt_return],
+        mode='markers',
+        marker=dict(
+            symbol='star',
+            color='#3b82f6',  # Electric Blue accent
+            size=22,
+            line=dict(color='black', width=1)
+        ),
+        name=f'Optimal Portfolio (Max Sharpe: {opt_sharpe:.2f})',
+        hovertemplate=(
+            f"<b>Max Sharpe: {opt_sharpe:.2f}</b><br>"
+            "Volatility: %{x:.2%}<br>"
+            "Expected Return: %{y:.2%}<extra></extra>"
         )
+    ))
 
-        cbar = fig.colorbar(scatter, ax=ax)
-        cbar.set_label('Sharpe Ratio', color=text_color)
-        cbar.ax.yaxis.set_tick_params(color=text_color)
-        plt.setp(cbar.ax.yaxis.get_ticklabels(), color=text_color)
-
-        ax.scatter(
-            opt_volatility, opt_return,
-            marker='*', color=marker_color, s=500, zorder=5,
-            label=f'Optimal Portfolio  |  Sharpe: {opt_sharpe:.2f}'
-        )
-
-        ax.set_title('Efficient Frontier — Monte Carlo Simulation',
-                     color=text_color, pad=14, fontsize=13)
-        ax.set_xlabel('Annualized Volatility (Risk)', color=text_color)
-        ax.set_ylabel('Annualized Expected Return', color=text_color)
-        ax.tick_params(colors=text_color)
-        for spine in ax.spines.values():
-            spine.set_edgecolor(spine_color)
-        ax.grid(True, linestyle='--', alpha=grid_alpha, color=grid_color)
-        ax.legend(labelspacing=0.8, facecolor=legend_face,
-                  edgecolor=spine_color, labelcolor=text_color)
-
-        plt.tight_layout()
+    # Layout configuration — background left alone for native theme sync
+    fig.update_layout(
+        title="Efficient Frontier — Monte Carlo Simulation",
+        xaxis_title="Annualized Volatility (Risk)",
+        yaxis_title="Annualized Expected Return",
+        xaxis=dict(tickformat=".2%"),
+        yaxis=dict(tickformat=".2%"),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1
+        ),
+        hovermode="closest",
+        margin=dict(l=40, r=40, t=60, b=40)
+    )
 
     return fig
