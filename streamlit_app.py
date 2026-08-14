@@ -132,7 +132,7 @@ if run_btn:
                 st.markdown("#### Weights Table")
                 display_df = weights_df.to_frame()
                 display_df["Weight (%)"] = display_df["Weight (%)"].map("{:.2f}%".format)
-                st.dataframe(display_df, use_container_width=True)
+                st.dataframe(display_df, width="stretch")
 
             with right:
                 st.markdown("#### Efficient Frontier")
@@ -140,7 +140,7 @@ if run_btn:
                     mean_returns, cov_matrix, results['optimal_weights'],
                     risk_free_rate=risk_free_rate
                 )
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width="stretch")
 
         # ─ TAB 2 ──────────────────────────────────────────────────────────────
         with tab2:

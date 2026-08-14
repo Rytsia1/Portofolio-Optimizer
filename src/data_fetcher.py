@@ -29,4 +29,13 @@ def get_stock_data(tickers: List[str], start_date: str, end_date: str) -> pd.Dat
     # Handle missing values: forward fill first, then backward fill
     clean_df = df.ffill().bfill()
     
+    # Drop tickers that failed to download entirely
+    clean_df = clean_df.dropna(axis=1, how='all')
+    
+    if clean_df.empty or clean_df.shape[1] < 2:
+        raise ValueError(
+            "Failed to fetch sufficient data from Yahoo Finance. "
+            "This is usually due to a Rate Limit (Too Many Requests), or invalid tickers."
+        )
+    
     return clean_df
