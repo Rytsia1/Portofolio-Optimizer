@@ -118,7 +118,7 @@ if run_btn:
         st.markdown("---")
 
         # ── TABS ───────────────────────────────────────────────────────────────
-        tab1, tab2 = st.tabs(["📊 Optimization Results", "📅 Historical Backtest"])
+        tab1, tab2, tab3 = st.tabs(["📊 Optimization Results", "📅 Historical Backtest", "⚠️ Stress Testing"])
 
         # ─ TAB 1 ──────────────────────────────────────────────────────────────
         with tab1:
@@ -176,8 +176,38 @@ if run_btn:
                 )
             except ValueError as e:
                 st.error(f"Backtest failed: {e}")
-            except Exception as e:
                 st.error(f"Unexpected backtest error: {e}")
+
+        # ─ TAB 3 ──────────────────────────────────────────────────────────────
+        with tab3:
+            st.markdown("### Simulate Historical Market Crashes")
+            from src.backtester import CRISIS_SCENARIOS, calculate_stress_test
+            from src.visualization import plot_stress_test
+            
+            crisis_name = st.selectbox("Select Crisis Scenario", list(CRISIS_SCENARIOS.keys()))
+            crisis_dates = CRISIS_SCENARIOS[crisis_name]
+            
+            st.markdown(f"**Period:** {crisis_dates['start']} to {crisis_dates['end']}")
+            
+            try:
+                stress_df, mdd_opt, mdd_bench = calculate_stress_test(
+                    df_prices, results['optimal_weights'], benchmark_ticker.strip().upper(),
+                    crisis_dates['start'], crisis_dates['end'], user_capital
+                )
+                
+                s1, s2 = st.columns(2)
+                s1.metric("Optimized Portfolio Max Drawdown", f"{mdd_opt * 100:.2f}%")
+                bench_col_name = f"Benchmark ({benchmark_ticker.strip().upper()})"
+                s2.metric(f"Benchmark Max Drawdown", f"{mdd_bench * 100:.2f}%")
+                
+                fig_stress = plot_stress_test(stress_df["Optimized Portfolio"], stress_df[bench_col_name], bench_col_name)
+                st.plotly_chart(fig_stress, width="stretch")
+                
+            except ValueError as e:
+                st.warning(str(e))
+            except Exception as e:
+                st.error(f"Unexpected error during stress test: {e}")
+
 
 else:
     # ── LANDING PLACEHOLDER ────────────────────────────────────────────────────

@@ -78,3 +78,47 @@ def run_backtest(
     }).dropna()
 
     return result_df
+
+
+CRISIS_SCENARIOS = {
+    "COVID-19 Crash (2020)": {"start": "2020-02-19", "end": "2020-04-07"},
+    "2022 Tech Bear Market": {"start": "2022-01-01", "end": "2022-12-31"},
+    "2008 Financial Crisis": {"start": "2007-10-09", "end": "2009-03-09"}
+}
+
+def calculate_stress_test(
+    prices_df: pd.DataFrame,
+    optimal_weights: pd.Series,
+    benchmark_ticker: str,
+    crisis_start: str,
+    crisis_end: str,
+    initial_capital: float = 10_000.0
+):
+    """
+    Slices historical data to the specified crisis period, simulates growth, 
+    and calculates Maximum Drawdown for the optimized portfolio and benchmark.
+    """
+    # Slice to crisis period
+    try:
+        sliced_df = prices_df.loc[crisis_start:crisis_end]
+    except KeyError:
+        # If dates are missing from index entirely
+        sliced_df = prices_df[(prices_df.index >= crisis_start) & (prices_df.index <= crisis_end)]
+
+    if sliced_df.empty or len(sliced_df) < 5:
+        raise ValueError(f"Historical data window does not cover the selected crisis period ({crisis_start} to {crisis_end}). Please expand your Start Date in the sidebar.")
+        
+    # Run backtest for this specific window
+    backtest_df = run_backtest(sliced_df, optimal_weights, benchmark_ticker, initial_capital)
+    
+    # Calculate Max Drawdown safely
+    def max_drawdown(series):
+        roll_max = series.cummax()
+        drawdown = series / roll_max - 1.0
+        return drawdown.min()
+        
+    mdd_opt = max_drawdown(backtest_df["Optimized Portfolio"])
+    bench_col = f"Benchmark ({benchmark_ticker})"
+    mdd_bench = max_drawdown(backtest_df[bench_col])
+    
+    return backtest_df, mdd_opt, mdd_bench

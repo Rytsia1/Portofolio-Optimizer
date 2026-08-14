@@ -99,3 +99,49 @@ def plot_efficient_frontier(
     )
 
     return fig
+
+def plot_stress_test(
+    portfolio_cumulative: pd.Series, 
+    benchmark_cumulative: pd.Series, 
+    benchmark_name: str
+) -> go.Figure:
+    """
+    Plots the comparative performance of the optimized portfolio vs benchmark 
+    during a historical crisis period.
+    """
+    fig = go.Figure()
+    
+    # Portfolio trace
+    fig.add_trace(go.Scatter(
+        x=portfolio_cumulative.index,
+        y=portfolio_cumulative.values,
+        mode='lines',
+        name='Optimized Portfolio',
+        line=dict(color='#3b82f6', width=2)
+    ))
+    
+    # Benchmark trace
+    fig.add_trace(go.Scatter(
+        x=benchmark_cumulative.index,
+        y=benchmark_cumulative.values,
+        mode='lines',
+        name=benchmark_name,
+        line=dict(color='#dc2626', width=2)  # Red for contrast
+    ))
+    
+    fig.update_layout(
+        title="Stress Test: Portfolio vs Benchmark",
+        xaxis_title="Date",
+        yaxis_title="Cumulative Value ($)",
+        hovermode="x unified",
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1
+        ),
+        margin=dict(l=40, r=40, t=60, b=40)
+    )
+    
+    return fig
