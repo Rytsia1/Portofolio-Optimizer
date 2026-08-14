@@ -12,6 +12,14 @@ from src.backtester import run_backtest
 # ── PAGE CONFIG ────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Portfolio Optimizer", layout="wide", page_icon="📈")
 
+# ── AVAILABLE TICKERS ──────────────────────────────────────────────────────────
+AVAILABLE_TICKERS = [
+    'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'TSLA', 'NVDA', 'JPM',
+    'V', 'WMT', 'JNJ', 'PG', 'MA', 'UNH', 'HD', 'BAC', 'XOM', 'KO',
+    'PEP', 'ABBV', 'MRK', 'LLY', 'AVGO', 'COST', 'ORCL', 'NFLX',
+    'ADBE', 'CSCO', 'CRM', 'AMD',
+]
+
 # ── HEADER ─────────────────────────────────────────────────────────────────────
 st.markdown(
     """
@@ -27,8 +35,10 @@ st.markdown(
 # ── SIDEBAR ────────────────────────────────────────────────────────────────────
 st.sidebar.markdown("## ⚙️ Configuration")
 
-tickers_input = st.sidebar.text_input(
-    "Stock Tickers (comma-separated)", value="AAPL, MSFT, GOOGL, AMZN"
+tickers = st.sidebar.multiselect(
+    "Select Stocks to Simulate",
+    options=AVAILABLE_TICKERS,
+    default=['AAPL', 'MSFT', 'GOOGL', 'AMZN']
 )
 
 today = dt.datetime.today().date()
@@ -58,10 +68,8 @@ run_btn = st.sidebar.button("🚀 Run Optimization", type="primary", use_contain
 
 # ── MAIN EXECUTION ─────────────────────────────────────────────────────────────
 if run_btn:
-    tickers = [t.strip().upper() for t in tickers_input.split(',') if t.strip()]
-
     if len(tickers) < 2:
-        st.error("Please enter at least **two** stock tickers.")
+        st.error("Please select at least **two** stocks.")
     elif max_weight * len(tickers) < 1.0:
         st.error(
             f"Invalid constraint: **{max_weight:.0%}** cap × **{len(tickers)} assets** = "
