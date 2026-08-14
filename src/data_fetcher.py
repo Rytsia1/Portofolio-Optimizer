@@ -1,10 +1,13 @@
 import pandas as pd
 import yfinance as yf
+import streamlit as st
 from typing import List
 
+@st.cache_data(show_spinner=False)
 def get_stock_data(tickers: List[str], start_date: str, end_date: str) -> pd.DataFrame:
     """
-    Downloads historical 'Adj Close' price data for a list of tickers.
+    Downloads historical 'Adj Close' price data for a list of tickers, heavily 
+    cached via Streamlit to prevent redundant Yahoo Finance API calls.
 
     Args:
         tickers (List[str]): List of stock ticker symbols.
