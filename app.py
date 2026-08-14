@@ -49,6 +49,9 @@ max_weight = st.sidebar.slider(
     "Max Weight per Asset",
     min_value=0.10, max_value=1.0, value=1.0, step=0.05, format="%.2f"
 )
+user_capital = st.sidebar.number_input(
+    "Initial Capital (USD)", min_value=100.0, value=10000.0, step=1000.0, format="%.2f"
+)
 
 st.sidebar.markdown("---")
 run_btn = st.sidebar.button("🚀 Run Optimization", type="primary", use_container_width=True)
@@ -137,7 +140,8 @@ if run_btn:
             try:
                 backtest_df = run_backtest(
                     df_prices, results['optimal_weights'],
-                    benchmark_ticker=benchmark_ticker.strip().upper()
+                    benchmark_ticker=benchmark_ticker.strip().upper(),
+                    initial_capital=user_capital
                 )
                 st.line_chart(backtest_df, color=["#a3ff00", "#00bfff", "#ff6b6b"])
 
