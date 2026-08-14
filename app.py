@@ -89,7 +89,7 @@ if st.sidebar.button("Run Optimization", type="primary"):
                         st.subheader("Optimal Asset Allocation")
                         weights_df = results['optimal_weights'].to_frame("Weight")
                         weights_df['Weight (%)'] = (weights_df['Weight'] * 100).map("{:.2f}%".format)
-                        st.dataframe(weights_df[['Weight (%)']], use_container_width=True)
+                        st.dataframe(weights_df[['Weight (%)']], width='stretch')
 
                         st.subheader("Performance Metrics")
                         st.metric("Expected Annual Return", f"{results['expected_return'] * 100:.2f}%")
@@ -126,7 +126,7 @@ if st.sidebar.button("Run Optimization", type="primary"):
                         )
 
                         # Line chart
-                        st.line_chart(backtest_df, use_container_width=True)
+                        st.line_chart(backtest_df, width='stretch')
 
                         # Final values summary
                         st.subheader("Final Portfolio Values")
